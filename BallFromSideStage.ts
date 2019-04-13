@@ -44,6 +44,13 @@ class DrawingUtil {
         context.restore()
     }
 
+    static drawVerticalLine(context : CanvasRenderingContext2D, size : number) {
+        context.beginPath()
+        context.moveTo(0, -size)
+        context.lineTo(0, size)
+        context.stroke()
+    }
+
     static drawBFSNode(context : CanvasRenderingContext2D, i : number, scale : number) {
         const gap : number = h / (nodes + 1)
         const sc1 : number = ScaleUtil.divideScale(scale, 0, 2)
@@ -54,14 +61,17 @@ class DrawingUtil {
         context.lineCap = 'round'
         context.lineWidth = Math.min(w, h) / strokeFactor
         context.strokeStyle = foreColor
+        context.fillStyle = foreColor
         context.save()
         context.translate(w / 2, gap * (i + 1))
         context.rotate(Math.PI/ 2 * sc2)
+        DrawingUtil.drawVerticalLine(context, size)
         for (var j = 0; j < balls; j++) {
-            const sc : number = ScaleUtil.divideScale(sc1, i, balls)
-            const x : number = (w / 2 + r) * sc * (1 - 2 * (j % 2))
+            const sc : number = ScaleUtil.divideScale(sc1, j, balls)
+            const x : number = (w / 2 + r) * (1 - sc) * (1 - 2 * (j % 2))
+            const y : number = size - yGap * j - r
             context.save()
-            DrawingUtil.drawMovingBall(context, size - yGap * j - r, x, r)
+            DrawingUtil.drawMovingBall(context, y, x, r)
             context.restore()
         }
         context.restore()
@@ -81,7 +91,7 @@ class BallFromSideStage {
     }
 
     render() {
-        this.context.fillStyle = foreColor
+        this.context.fillStyle = backColor
         this.context.fillRect(0, 0, w, h)
         this.renderer.render(this.context)
     }
@@ -109,6 +119,7 @@ class State {
 
     update(cb : Function) {
         this.scale += ScaleUtil.updateValue(this.scale, this.dir, balls, 1)
+        console.log(this.scale)
         if (Math.abs(this.scale - this.prevScale) > 1) {
             this.scale = this.prevScale + this.dir
             this.dir = 0
