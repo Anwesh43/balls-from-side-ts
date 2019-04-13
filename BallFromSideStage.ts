@@ -33,6 +33,41 @@ class ScaleUtil {
     }
 }
 
+class DrawingUtil {
+
+    static drawMovingBall(context : CanvasRenderingContext2D, y : number, x : number, r : number) {
+        context.save()
+        context.translate(x, y)
+        context.beginPath()
+        context.arc(0, 0, r, 0, 2 * Math.PI)
+        context.fill()
+        context.restore()
+    }
+
+    static drawBFSNode(context : CanvasRenderingContext2D, i : number, scale : number) {
+        const gap : number = h / (nodes + 1)
+        const sc1 : number = ScaleUtil.divideScale(scale, 0, 2)
+        const sc2 : number = ScaleUtil.divideScale(scale, 1, 2)
+        const size : number = gap / sizeFactor
+        const yGap : number = 2 * size / balls
+        const r : number = yGap / 2
+        context.lineCap = 'round'
+        context.lineWidth = Math.min(w, h) / strokeFactor
+        context.strokeStyle = foreColor
+        context.save()
+        context.translate(w / 2, gap * (i + 1))
+        context.rotate(Math.PI/ 2 * sc2)
+        for (var j = 0; j < balls; j++) {
+            const sc : number = ScaleUtil.divideScale(sc1, i, balls)
+            const x : number = (w / 2 + r) * sc * (1 - 2 * (j % 2))
+            context.save()
+            DrawingUtil.drawMovingBall(context, size - yGap * j - r, x, r)
+            context.restore()
+        }
+        context.restore()
+    }
+}
+
 class BallFromSideStage {
     canvas : HTMLCanvasElement = document.createElement('canvas')
     context : CanvasRenderingContext2D
