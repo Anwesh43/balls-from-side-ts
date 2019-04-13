@@ -206,3 +206,25 @@ class  BallFromSide {
         this.curr.startUpdating(cb)
     }
 }
+
+class Renderer {
+
+    bfs : BallFromSide = new BallFromSide()
+    animator : Animator = new Animator()
+
+    render(context : CanvasRenderingContext2D) {
+        this.bfs.draw(context)
+    }
+
+    handleTap(cb : Function) {
+        this.bfs.startUpdating(() => {
+            this.animator.start(() => {
+                cb()
+                this.bfs.update(() => {
+                    this.animator.stop()
+                    cb()
+                })
+            })
+        })
+    }
+}
